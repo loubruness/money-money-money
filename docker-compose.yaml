@@ -4,6 +4,11 @@ services:
   db:
     image: postgres:17
     container_name: postgres-db
+    restart: always
+
+    # Set shared memory limit when using docker-compose. This is a good practice according to the official PostgreSQL documentation.
+    shm_size: 128mb
+
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
