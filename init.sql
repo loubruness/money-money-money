@@ -32,7 +32,7 @@ CREATE TABLE "Investment" (
 );
 
 CREATE TABLE "Wallet_Transaction" (
-   "Id_Wallet" SERIAL,
+   "Id_Wallet_Transaction" SERIAL,
    "transaction_type" VARCHAR(50) NOT NULL,
    "transaction_amount" DECIMAL(15,2) NOT NULL,
    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
