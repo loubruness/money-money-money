@@ -1,5 +1,5 @@
-import { db } from "../database/db_connection.js";
+import { db } from "../db_connection.js";
 
 export const getUserById = async (id) => {
-  return db("user").select("*").where({ Id_User: id });
+  return db("User").select("*").where({ Id_User: id });
 };

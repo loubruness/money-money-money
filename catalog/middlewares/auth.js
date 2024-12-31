@@ -1,14 +1,19 @@
-import { getUserById } from "../database/queries/userQueries";
+import { getUserById } from "../database/queries/userQueries.js";
 
 // Authorization middleware
-const authenticate = (...allowedRoles) => {
+export const authorize = (...allowedRoles) => {
   return (request, response, next) => {
     // Get the user from the user id in the request
-    const userId = request.userId;
+    const userId = request.query.userId;
     getUserById(userId)
       .then((user) => {
+        if (user.length === 0) {
+          response.status(404).send("User not found");
+          return;
+        }
+
         // Check if the user has the required role
-        const hasRole = user.role in allowedRoles;
+        const hasRole = allowedRoles.includes(user[0].role);
 
         // If the user has the required route authorization, call next()
         if (hasRole) {
@@ -26,7 +31,11 @@ const authenticate = (...allowedRoles) => {
           );
       })
       .catch((error) => {
-        response.status(500).send("Error authenticating user");
+        response.status(500).json({
+          info: "Error authenticating user",
+          error: error,
+          message: error.message,
+        });
       });
   };
 };
