@@ -44,18 +44,99 @@ export const getMonthlyRentalIncome = async (Id_User) => {
   }
 };
 
-// Add a new investment for a user
+// // Add a new investment for a user
+// export const addInvestment = async (Id_User, Id_Property, amount) => {
+//   return await db.transaction(async (trx) => {
+//     // Validate investment amount
+//     if (amount <= 500) {
+//       throw new Error('Investment amount must be greater than 500.');
+//     }
+
+//     // Lock rows and calculate current year's total investments
+//     const currentYear = new Date().getFullYear();
+//     const totalInvestmentsThisYear = await trx('Investment')
+//       .join('Property', 'Investment.Id_Property', '=', 'Property.Id_Property')
+//       .where('Investment.Id_User', Id_User)
+//       .andWhere('Property.status', 'funded')
+//       .andWhereRaw('EXTRACT(YEAR FROM TO_DATE(Investment.created_at, \'YYYY-MM-DD\')) = ?', [currentYear])
+//       .forUpdate()
+//       .sum('Investment.investment_amount as total')
+//       .first();
+
+//     const totalThisYear = totalInvestmentsThisYear.total || 0;
+
+//     if (totalThisYear + amount > 10000) {
+//       throw new Error('Total investments for this year cannot exceed 10,000.');
+//     }
+
+//     // Insert the new investment
+//     const newInvestment = {
+//       Id_User,
+//       Id_Property,
+//       investment_amount: amount,
+//       created_at: new Date().toISOString(),
+//     };
+//     await trx('Investment').insert(newInvestment);
+
+//     return { success: true, message: 'Investment created successfully.' };
+//   });
+// };
+
 export const addInvestment = async (Id_User, Id_Property, amount) => {
   try {
-    const newInvestment = {
-      Id_User,
-      Id_Property,
-      investment_amount: amount,
-      created_at: new Date().toISOString(),
-    };
-    await db('Investment').insert(newInvestment);
+    // Start a transaction
+    await db.transaction(async (trx) => {
+      // Step 1: Check if the user has enough wallet balance
+      const user = await trx('User')
+        .select('wallet_balance')
+        .where({ Id_User })
+        .first();
+
+      if (!user || user.wallet_balance < amount) {
+        throw new Error('Insufficient wallet balance.');
+      }
+
+      // Step 2: Check total investments for the year
+      const currentYear = new Date().getFullYear();
+      const totalInvested = await trx('Investment')
+        .join('Property', 'Investment.Id_Property', 'Property.Id_Property')
+        .sum('Investment.investment_amount as total')
+        .where('Investment.Id_User', Id_User)
+        .andWhere('Property.status', 'funded')
+        .andWhereRaw('EXTRACT(YEAR FROM "Investment"."created_at") = ?', [currentYear])
+        .first();
+
+      if (totalInvested.total + amount > 10000) {
+        throw new Error('Total investments for the year exceed the limit of 10,000.');
+      }
+
+      if (amount <= 500) {
+        throw new Error('Investment amount must be greater than 500.');
+      }
+
+      // Step 3: Deduct wallet balance
+      await trx('User')
+        .where({ Id_User })
+        .update({
+          wallet_balance: user.wallet_balance - amount,
+        });
+
+      // Step 4: Add investment
+      const newInvestment = {
+        Id_User,
+        Id_Property,
+        investment_amount: amount,
+        created_at: new Date().toISOString(),
+      };
+
+      await trx('Investment').insert(newInvestment);
+
+      // Commit the transaction
+    });
+
+    return { success: true, message: 'Investment added successfully.' };
   } catch (error) {
-    console.error('Error adding investment:', error);
+    console.error('Error adding investment:', error.message);
     throw error;
   }
 };
