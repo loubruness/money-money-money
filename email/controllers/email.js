@@ -42,3 +42,42 @@ export const sendEmail =  async (req, res) =>{
         res.status(500).json({ success: false, error: error.message });
     }
 }
+
+export const sendCertificate =  async (req, res) =>{
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: process.env.MAIL_USERNAME,
+            pass: process.env.MAIL_PASSWORD,
+        },
+    });
+
+    try {
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: req.body.email,
+            subject: "Delivery of your ownership certificate",
+            html: `
+                <p>Good news, you are now officially the proud owner of shares of the following property : ${req.body.property}.</p>
+                <p>Here are the details:</p>
+                <ul>
+                    <li><strong>Property:</strong> ${req.body.property}</li>
+                    <li><strong>Shares:</strong> ${req.body.shares}</li>
+                    <li><strong>Date:</strong> ${req.body.date}</li>
+                </ul>
+                <p>Best regards,<br>SSA Team</p>
+            `,
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`Message sent: ${info.messageId}`);
+        res.status(200).json({ success: true, message: `Message sent: ${info.messageId}` });
+    } catch (error) {
+        console.error('Error sending email:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
