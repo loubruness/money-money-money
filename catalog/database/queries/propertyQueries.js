@@ -39,3 +39,17 @@ export const openPropertyForFunding = async (id) => {
 export const closePropertyForFunding = async (id) => {
   return db("Property").where({ Id_Property: id }).update({ status: "closed" });
 };
+
+export const cancelPropertyFunding = async (id) => {
+  return db("Property")
+    .where({ Id_Property: id })
+    .update({ status: "cancelled" });
+};
+
+export const completePropertyFunding = async (id) => {
+  return db("Property").where({ Id_Property: id }).update({ status: "funded" });
+};
+
+export const getInvestmentsForProperty = async (id) => {
+  return db("Investment").select("*").where({ Id_Property: id });
+};

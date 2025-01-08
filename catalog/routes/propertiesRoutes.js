@@ -9,6 +9,8 @@ import {
   getPropertiesClosedForFunding,
   openFunding,
   stopFunding,
+  updateFundingMonthly,
+  updateFundingForProperty,
 } from "../controller/propertiesController.js";
 
 import { authorize } from "../middlewares/auth.js";
@@ -40,36 +42,20 @@ router.get(
   }
 );
 
-router.get("/:id", authorize("admin"), (request, response) => {
-  getPropertyById(request, response);
-});
+router.get("/:id", authorize("admin"), getPropertyById);
 
-router.post("/add", authorize("admin", "agent"), (request, response) => {
-  addProperty(request, response);
-});
+router.post("/add", authorize("admin", "agent"), addProperty);
 
-router.put("/:id", authorize("admin", "agent"), (request, response) => {
-  updateProperty(request, response);
-});
+router.put("/:id", authorize("admin", "agent"), updateProperty);
 
-router.delete("/:id", authorize("admin", "agent"), (request, response) => {
-  deleteProperty(request, response);
-});
+router.delete("/:id", authorize("admin", "agent"), deleteProperty);
 
-router.patch(
-  "/:id/open-funding",
-  authorize("admin", "investor"),
-  (request, response) => {
-    openFunding(request, response);
-  }
-);
+router.patch("/:id/open-funding", authorize("admin", "investor"), openFunding);
 
-router.patch(
-  "/:id/stop-funding",
-  authorize("admin", "investor"),
-  (request, response) => {
-    stopFunding(request, response);
-  }
-);
+router.patch("/:id/stop-funding", authorize("admin", "investor"), stopFunding);
+
+router.patch("/update-funding-monthly", updateFundingMonthly);
+
+router.patch("/:id/update-funding", updateFundingForProperty);
 
 export default router;
