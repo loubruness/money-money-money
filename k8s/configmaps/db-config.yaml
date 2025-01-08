@@ -4,7 +4,6 @@ kind: ConfigMap
 metadata:
   name: init-config
 data:
-  DATABASE_URL: "postgres://user:password@money-money-money-db:5432/money-money-money"
-  POSTGRES_USER : "user"
-  POSTGRES_PASSWORD : "password"
-  POSTGRES_DB : "money-money-money"
+  POSTGRES_USER : "postgres"
+  POSTGRES_PASSWORD : "postgres"
+  POSTGRES_DB : "postgres"
