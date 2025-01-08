@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: account-service
+spec:
+  selector:
+    app: account-service  # Sélectionne les pods avec l'étiquette 'app: account-service'
+  ports:
+    - protocol: TCP
+      port: 5000    # Le port exposé sur le service
+      targetPort: 5000  # Le port du container à atteindre
+  type: ClusterIP  # Par défaut, expose le service uniquement au sein du cluster
