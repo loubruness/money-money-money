@@ -1,3 +1,4 @@
+import "dotenv/config";
 import {
   getAllProperties as getAllPropertiesQuery,
   getPropertyById as getPropertyByIdQuery,
@@ -238,7 +239,7 @@ export const updateFundingMonthly = async (request, response) => {
                 investments.forEach((investment) => {
                   // Call wallet service using fetch to refund the investor
                   fetch(
-                    `${env.WALLET_SERVICE_URL}/wallets/${investment.Id_User}/transfer`,
+                    `${process.env.WALLET_SERVICE_URL}/wallets/${investment.Id_User}/transfer`,
                     {
                       method: "POST",
                       body: JSON.stringify({
