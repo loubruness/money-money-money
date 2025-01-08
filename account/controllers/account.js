@@ -1,11 +1,11 @@
-import { createUserProfile, checkUser } from '../database/queries/account.js';
+import { checkUser, createUserProfile } from '../database/queries/account.js';
 
 // Create a new user profile
 export const createProfileAction = async (req, res) => {
   try {
-    const { user_name, password, role, wallet_balance } = req.body;
+    const { user_name, user_last_name, birth_date, email, password, role, wallet_balance } = req.body;
 
-    if (!user_name || !password || !role) {
+    if (!user_name || !user_last_name ||!birth_date || !email || !password || !role) {
       return res.status(400).json({ success: false, error: 'Missing required fields' });
     }
 
@@ -23,7 +23,7 @@ export const createProfileAction = async (req, res) => {
       return res.status(400).json({ success: false, error: 'Username already exists' });
     }
 
-    const newUserId = await createUserProfile(user_name, password, role, wallet_balance);
+    const newUserId = await createUserProfile(user_name, user_last_name, birth_date, email, password, role, wallet_balance);
     res.status(201).json({ success: true, Id_User: newUserId });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

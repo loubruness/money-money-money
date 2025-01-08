@@ -1,11 +1,14 @@
 import { db } from '../db_connection.js';
 
 // Create a new user profile in the User table
-export const createUserProfile = async (user_name, password, role, wallet_balance) => {
+export const createUserProfile = async (user_name, user_last_name, birth_date, email, password, role, wallet_balance) => {
   try {
     const [newUserId] = await db('User').insert(
       {
         user_name,
+        user_last_name,
+        birth_date,
+        email,
         password,
         role,
         wallet_balance: wallet_balance || 0, // Default balance is 0 if not provided

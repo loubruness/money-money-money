@@ -1,6 +1,9 @@
 CREATE TABLE "User" (
    "Id_User" SERIAL,
    "user_name" VARCHAR(100) NOT NULL,
+   "user_last_name" VARCHAR(100) NOT NULL,
+   "birth_date" DATE NOT NULL,
+   "email" VARCHAR(255) NOT NULL,
    "password" VARCHAR(255) NOT NULL,
    "role" VARCHAR(50) NOT NULL,
    "wallet_balance" DECIMAL(15,2) DEFAULT 0.00,
@@ -38,7 +41,7 @@ CREATE TABLE "Wallet_Transaction" (
    "transaction_amount" DECIMAL(15,2) NOT NULL,
    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    "Id_User" INT NOT NULL,
-   PRIMARY KEY ("Id_Wallet"),
+   PRIMARY KEY ("Id_Wallet_Transaction"),
    CONSTRAINT fk_wallet_user FOREIGN KEY ("Id_User") REFERENCES "User" ("Id_User") ON DELETE CASCADE
 );
 
