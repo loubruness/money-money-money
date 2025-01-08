@@ -24,6 +24,7 @@ CREATE TABLE "Property" (
 CREATE TABLE "Investment" (
    "Id_Investment" SERIAL,
    "investment_amount" DECIMAL(15,2) NOT NULL,
+   "investment_share" DECIMAL(5,2) NOT NULL,
    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    "Id_Property" INT NOT NULL,
    "Id_User" INT NOT NULL,
