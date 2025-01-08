@@ -5,15 +5,16 @@ export const getWalletBalance = async (Id_User) => {
   try{
     const result = await db('User')
     .select('wallet_balance')
-    .where('Id_User', Id_User);
+    .where('Id_User', Id_User)
+    .first();
 
   // Convert the string to a number 
-  const walletBalance = parseFloat(result[0].wallet_balance);
+  const walletBalance = parseFloat(result.wallet_balance);
   return walletBalance; 
   }
   catch (error) {
     console.error("Error getting wallet balance:", error);
-    return 0;
+    throw new Error("Failed to fetch wallet balance");
   }
 };
 
@@ -27,7 +28,7 @@ export const getWalletTransactions = async (Id_User) => {
   }
   catch (error) {
     console.error("Error getting wallet transactions:", error);
-    return [];
+    throw new Error("Failed to fetch wallet transactions");
   }
 };
 
@@ -40,7 +41,7 @@ export const checkUser = async (Id_User) => {
   }
   catch (error) {
     console.error("Error checking user:", error);
-    return [];
+    throw new Error("Failed to check user");
   }
 };
 
@@ -53,6 +54,7 @@ export const updateWalletBalance = async (Id_User, new_balance) => {
   }
   catch (error) {
     console.error("Error updating wallet balance:", error);
+    throw new Error("Failed to update wallet balance");
   }
 };
 
@@ -68,21 +70,20 @@ export const insertTransaction = async (Id_User, transaction_type, transaction_a
     await db('Wallet_Transaction').insert(newTransaction);
   } catch (error) {
     console.error("Error inserting transaction:", error);
+    throw new Error("Failed to insert transaction");
   }
 };
 
 // Retrieve the rental income for a user from the Property table
 export const getProperty = async (Id_User, Id_Property) => {
   try{
-    const result = await db('Property')
+    return await db('Property')
     .select('rental_income_rate','property_price')
     .where('Id_User', Id_User)
-    .andWhere('Id_Property', Id_Property);
-    
-    // Convert the string to a number 
-    return result[0]; 
+    .andWhere('Id_Property', Id_Property)
+    .first();
   } catch (error) {
-    console.error("Error getting rental income:", error);
-    return 0;
+    console.error("Error getting property:", error);
+    throw new Error("Failed to fetch property details");
   }
 };
