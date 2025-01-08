@@ -9,6 +9,9 @@ import {
   openPropertyForFunding,
   closePropertyForFunding,
   getNumberOfPropertiesOpenForFunding,
+  getInvestmentsForProperty,
+  cancelPropertyFunding,
+  completePropertyFunding,
 } from "../database/queries/propertyQueries.js";
 
 export const getAllProperties = async (request, response) => {
@@ -197,4 +200,121 @@ export const stopFunding = async (request, response) => {
     .catch((error) => {
       response.status(500).json({ error: error, message: error.message });
     });
+};
+
+export const updateFundingMonthly = async (request, response) => {
+  // Get every property that is open for funding
+  getPropertiesOpenForFundingQuery()
+    .then(async (properties) => {
+      // Check if deadline has passed for any property
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+
+      properties.forEach((property) => {
+        const deadline = new Date(property.funding_deadline);
+        deadline.setHours(0, 0, 0, 0);
+
+        if (currentDate > deadline) {
+          // Deadline has passed.
+
+          // Check if the property has reached its funding goal
+          // Get all investments made for the property
+          getInvestmentsForProperty(property.Id_Property).then(
+            (investments) => {
+              // Sum the total amount invested
+              property.current_funding = investments.reduce(
+                (total, investment) => total + investment.investment_amount,
+                0
+              );
+
+              if (property.current_funding >= property.property_price) {
+                // Property has reached its funding goal
+                closePropertyForFunding(property.Id_Property);
+              } else {
+                // Property has not reached its funding goal
+                cancelPropertyFunding(property.Id_Property);
+
+                // Call wallet service to refund all investors
+                investments.forEach((investment) => {
+                  // Call wallet service using fetch to refund the investor
+                  fetch(
+                    `${env.WALLET_SERVICE_URL}/wallets/${investment.Id_User}/transfer`,
+                    {
+                      method: "POST",
+                      body: JSON.stringify({
+                        amount: investment.investment_amount,
+                        transaction_type: "refund",
+                      }),
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  ).then((response) => {
+                    if (response.status !== 200) {
+                      console.log("Error refunding user " + investment.Id_User);
+                    }
+                  });
+                });
+              }
+              response.status(200).send();
+              return;
+            }
+          );
+        }
+        response.status(200).send();
+        return;
+      });
+    })
+    .catch((error) => {
+      response.status(500).json({ error: error, message: error.message });
+    });
+};
+
+/**
+ * Update a property once the funding has been completed
+ */
+export const updateFundingForProperty = async (request, response) => {
+  const property_id = request.params.id;
+
+  // Get the property
+  getPropertyByIdQuery(property_id).then((property) => {
+    // Check if the property exists
+    if (property.length === 0) {
+      response.status(404).json({ error: "Property not found" });
+      return;
+    }
+
+    // Check if the property is open for funding
+    if (property[0].status !== "open") {
+      response.status(400).json({ error: "Property is not open for funding" });
+      return;
+    }
+
+    // Check if the property has reached its funding goal
+    getInvestmentsForProperty(property_id).then((investiments) => {
+      // Sum the total amount invested
+      property[0].current_funding = investiments.reduce(
+        (total, investiment) => total + investiment.investment_amount,
+        0
+      );
+
+      if (
+        Number(property[0].current_funding) < Number(property[0].property_price)
+      ) {
+        response
+          .status(400)
+          .json({ error: "Property has not reached its funding goal" });
+        return;
+      }
+
+      // Update the property's status to "funded"
+      completePropertyFunding(property_id)
+        .then(() => {
+          response.status(200).send();
+        })
+        .catch((error) => {
+          response.status(500).json({ error: error, message: error.message });
+        });
+    });
+  });
 };
