@@ -22,12 +22,14 @@ app.listen(port, () => {
 });
 
 // Job to check and update funding once per month
-const job_update_funding_monthly = schedule.scheduleJob(
-  process.env.UPDATE_FUNDING_FREQUENCY,
-  function () {
-    console.log("Running job to check and update funding for all properties");
-    fetch(`http://localhost:${port}/properties/update-funding-monthly`, {
-      method: "PATCH",
-    }).catch((error) => console.error("Error:", error));
-  }
-);
+if (process.env.UPDATE_FUNDING_MONTHLY === "true") {
+  const job_update_funding_monthly = schedule.scheduleJob(
+    process.env.UPDATE_FUNDING_FREQUENCY,
+    function () {
+      console.log("Running job to check and update funding for all properties");
+      fetch(`http://localhost:${port}/properties/update-funding-monthly`, {
+        method: "PATCH",
+      }).catch((error) => console.error("Error:", error));
+    }
+  );
+}
