@@ -24,6 +24,10 @@ export const getPropertiesOpenForFunding = async () => {
   return db("Property").select("*").where({ status: "open" });
 };
 
+export const getNumberOfPropertiesOpenForFunding = async () => {
+  return db("Property").count("*").where({ status: "open" });
+};
+
 export const getPropertiesClosedForFunding = async () => {
   return db("Property").select("*").where({ status: "closed" });
 };
@@ -34,4 +38,18 @@ export const openPropertyForFunding = async (id) => {
 
 export const closePropertyForFunding = async (id) => {
   return db("Property").where({ Id_Property: id }).update({ status: "closed" });
+};
+
+export const cancelPropertyFunding = async (id) => {
+  return db("Property")
+    .where({ Id_Property: id })
+    .update({ status: "cancelled" });
+};
+
+export const completePropertyFunding = async (id) => {
+  return db("Property").where({ Id_Property: id }).update({ status: "funded" });
+};
+
+export const getInvestmentsForProperty = async (id) => {
+  return db("Investment").select("*").where({ Id_Property: id });
 };
