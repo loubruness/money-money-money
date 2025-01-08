@@ -7,15 +7,11 @@ export const getUserPortfolio = async (Id_User) => {
     return await db('Investment')
       .join('Property', 'Investment.Id_Property', '=', 'Property.Id_Property')
       .select(
-        'Investment.Id_Investment',
-        'Investment.investment_amount',
-        'Investment.created_at',
         'Property.property_name',
         'Property.property_type',
         'Property.property_price',
-        'Property.rental_income_rate',
-        'Property.appreciation_rate',
-        'Property.funding_deadline'
+        'Investment.investment_amount',
+        'Investment.investment_share'
       )
       .where('Investment.Id_User', Id_User);
   } catch (error) {
@@ -34,7 +30,7 @@ export const getMonthlyRentalIncome = async (Id_User) => {
 
     let totalIncome = 0;
     result.forEach((row) => {
-      const monthlyIncome = (row.rental_income_rate / 100) * row.property_price;
+      const monthlyIncome = ((row.rental_income_rate / 100) * row.property_price) / 12;
       totalIncome += monthlyIncome;
     });
     return totalIncome;
@@ -44,49 +40,12 @@ export const getMonthlyRentalIncome = async (Id_User) => {
   }
 };
 
-// // Add a new investment for a user
-// export const addInvestment = async (Id_User, Id_Property, amount) => {
-//   return await db.transaction(async (trx) => {
-//     // Validate investment amount
-//     if (amount <= 500) {
-//       throw new Error('Investment amount must be greater than 500.');
-//     }
-
-//     // Lock rows and calculate current year's total investments
-//     const currentYear = new Date().getFullYear();
-//     const totalInvestmentsThisYear = await trx('Investment')
-//       .join('Property', 'Investment.Id_Property', '=', 'Property.Id_Property')
-//       .where('Investment.Id_User', Id_User)
-//       .andWhere('Property.status', 'funded')
-//       .andWhereRaw('EXTRACT(YEAR FROM TO_DATE(Investment.created_at, \'YYYY-MM-DD\')) = ?', [currentYear])
-//       .forUpdate()
-//       .sum('Investment.investment_amount as total')
-//       .first();
-
-//     const totalThisYear = totalInvestmentsThisYear.total || 0;
-
-//     if (totalThisYear + amount > 10000) {
-//       throw new Error('Total investments for this year cannot exceed 10,000.');
-//     }
-
-//     // Insert the new investment
-//     const newInvestment = {
-//       Id_User,
-//       Id_Property,
-//       investment_amount: amount,
-//       created_at: new Date().toISOString(),
-//     };
-//     await trx('Investment').insert(newInvestment);
-
-//     return { success: true, message: 'Investment created successfully.' };
-//   });
-// };
 
 export const addInvestment = async (Id_User, Id_Property, amount) => {
   try {
     // Start a transaction
     await db.transaction(async (trx) => {
-      // Step 1: Check if the user has enough wallet balance
+      // Check if the user has enough wallet balance
       const user = await trx('User')
         .select('wallet_balance')
         .where({ Id_User })
@@ -96,7 +55,18 @@ export const addInvestment = async (Id_User, Id_Property, amount) => {
         throw new Error('Insufficient wallet balance.');
       }
 
-      // Step 2: Check total investments for the year
+      const property = await trx('Property')
+        .select('property_price')
+        .where({ Id_Property })
+        .first();
+
+      if (!property) {
+        throw new Error('Property not found.');
+      }
+
+      const property_price = parseFloat(property.property_price);
+
+      // Check total investments for the year (lock)
       const currentYear = new Date().getFullYear();
       const totalInvested = await trx('Investment')
         .join('Property', 'Investment.Id_Property', 'Property.Id_Property')
@@ -114,18 +84,21 @@ export const addInvestment = async (Id_User, Id_Property, amount) => {
         throw new Error('Investment amount must be greater than 500.');
       }
 
-      // Step 3: Deduct wallet balance
+      // Deduct wallet balance
       await trx('User')
         .where({ Id_User })
         .update({
           wallet_balance: user.wallet_balance - amount,
         });
 
-      // Step 4: Add investment
+
+      const investment_share = amount / property_price;
+      // Add investment
       const newInvestment = {
         Id_User,
         Id_Property,
         investment_amount: amount,
+        investment_share,
         created_at: new Date().toISOString(),
       };
 
