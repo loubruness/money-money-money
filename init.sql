@@ -15,6 +15,7 @@ CREATE TABLE "Property" (
    "rental_income_rate" DECIMAL(5,2) DEFAULT 0.00,
    "appreciation_rate" DECIMAL(5,2) DEFAULT 0.00,
    "funding_deadline" TIMESTAMP NOT NULL,
+   "status" VARCHAR(50) NOT NULL DEFAULT 'closed',
    "Id_User" INT,
    PRIMARY KEY ("Id_Property"),
    CONSTRAINT fk_user FOREIGN KEY ("Id_User") REFERENCES "User" ("Id_User") ON DELETE SET NULL
