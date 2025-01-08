@@ -1,6 +1,26 @@
 version: '3.8'
 
 services:
+  account-service:
+    build: 
+      context: ./account
+    image: account-service
+  catalog-service:
+    build: 
+      context: ./catalog
+    image: catalog-service
+  email-service:
+    build: 
+      context: ./email
+    image: email-service
+  payment-service:
+    build: 
+      context: ./payment
+    image: payment-service
+  wallet-service:
+    build: 
+      context: ./wallet
+    image: wallet-service
   db:
     image: postgres:17
     container_name: postgres-db
