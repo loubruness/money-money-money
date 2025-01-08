@@ -15,34 +15,43 @@ import { authorize } from "../middlewares/auth.js";
 
 const router = express.Router();
 
-router.get("/", authorize("admin", "agent"), (request, response) => {
-  const fundingStatus = request.query.funding;
+router.get(
+  "/",
+  authorize("admin", "agent", "investor"),
+  (request, response) => {
+    const fundingStatus = request.query.funding;
 
-  if (fundingStatus === "open") {
-    getPropertiesOpenForFunding(request, response);
-    return;
-  }
-  if (fundingStatus === "closed") {
-    getPropertiesClosedForFunding(request, response);
-    return;
-  }
+    if (fundingStatus === "closed") {
+      getPropertiesClosedForFunding(request, response);
+      return;
+    }
 
-  getAllProperties(request, response);
-});
+    if (request.user.role !== "investor") {
+      if (fundingStatus === "open") {
+        getPropertiesOpenForFunding(request, response);
+        return;
+      }
+
+      getAllProperties(request, response);
+    } else {
+      response.status(403).json({ message: "Forbidden" });
+    }
+  }
+);
 
 router.get("/:id", authorize("admin"), (request, response) => {
   getPropertyById(request, response);
 });
 
-router.post("/add", authorize("admin"), (request, response) => {
+router.post("/add", authorize("admin", "agent"), (request, response) => {
   addProperty(request, response);
 });
 
-router.put("/:id", authorize("admin"), (request, response) => {
+router.put("/:id", authorize("admin", "agent"), (request, response) => {
   updateProperty(request, response);
 });
 
-router.delete("/:id", authorize("admin"), (request, response) => {
+router.delete("/:id", authorize("admin", "agent"), (request, response) => {
   deleteProperty(request, response);
 });
 
