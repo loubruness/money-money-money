@@ -1,6 +1,24 @@
 # money-money-money
 
 
+
+***Fast test:***
+start minikube:
+
+```bash
+minikube start
+```
+
+To be updates, the images must be build from the minicubs docker:
+
+* windows:
+  ```bash
+  & minikube -p minikube docker-env --shell powershell | Invoke-Expression
+  ```
+
+
+
+
 init sql:
 
 ```
@@ -13,8 +31,6 @@ si la db à déja été initialisée:
 kubectl delete pvc db-pvc
 kubectl apply -f k8s/deployments
 ```
-
-
 
 ```
 kubectl exec -it db-7bbdf8bdff-9fqs2 -- bash
