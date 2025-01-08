@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { depositAction, withdrawAction, checkAction, transferAction } from '../controllers/wallet.js';
+import { depositAction, withdrawAction, checkAction, receiveMonthlyIncomeAction } from '../controllers/wallet.js';
 
 const router = Router();
 
@@ -17,8 +17,8 @@ router.post('/:Id_User/withdraw', (req, res) => {
 
 router.get('/:Id_User', checkAction);
 
-router.post('/:Id_User/transfer', (req, res) => {
-    transferAction(req, res);
+router.get('/:Id_User/:Id_Property', (req, res) => {
+    receiveMonthlyIncomeAction(req, res);
 });
 
 export default router;

@@ -70,3 +70,19 @@ export const insertTransaction = async (Id_User, transaction_type, transaction_a
     console.error("Error inserting transaction:", error);
   }
 };
+
+// Retrieve the rental income for a user from the Property table
+export const getProperty = async (Id_User, Id_Property) => {
+  try{
+    const result = await db('Property')
+    .select('rental_income_rate','property_price')
+    .where('Id_User', Id_User)
+    .andWhere('Id_Property', Id_Property);
+    
+    // Convert the string to a number 
+    return result[0]; 
+  } catch (error) {
+    console.error("Error getting rental income:", error);
+    return 0;
+  }
+};
