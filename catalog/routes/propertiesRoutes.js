@@ -12,6 +12,7 @@ import {
 } from "../controller/propertiesController.js";
 
 import { authorize } from "../middlewares/auth.js";
+import { getUserRoleFromId } from "../database/queries/userQueries.js";
 
 const router = express.Router();
 
@@ -26,7 +27,7 @@ router.get(
       return;
     }
 
-    if (request.user.role !== "investor") {
+    if (getUserRoleFromId(request.query.userId) !== "investor") {
       if (fundingStatus === "open") {
         getPropertiesOpenForFunding(request, response);
         return;
