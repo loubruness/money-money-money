@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service  # Nom DNS du service
+spec:
+  selector:
+    app: db-service  # Correspond à l'étiquette du pod PostgreSQL
+  ports:
+    - protocol: TCP
+      port: 5432  # Port exposé par le Service
+      targetPort: 5432  # Port du container PostgreSQL
+  clusterIP: None  # Optionnel, pour utiliser un "headless service" si besoin

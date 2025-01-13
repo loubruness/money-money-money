@@ -20,4 +20,4 @@ spec:
         - containerPort: 5000
         envFrom:
         - configMapRef:
-            name: account-config 
+            name: db-connexion-config
