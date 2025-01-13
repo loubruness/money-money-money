@@ -9,4 +9,4 @@ spec:
     - protocol: TCP
       port: 5000    # Le port exposé sur le service
       targetPort: 5000  # Le port du container à atteindre
-  type: ClusterIP  # Par défaut, expose le service uniquement au sein du cluster
+  type: NodePort  # Expose le service sur un port aléatoire de l'hôte

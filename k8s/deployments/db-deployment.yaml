@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: db
+  name: db-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: db
+      app: db-service
   template:
     metadata:
       labels:
-        app: db
+        app: db-service
     spec:
       containers:
-        - name: db
+        - name: db-service
           image: postgres:17
           ports:
             - containerPort: 5432
           envFrom:
             - configMapRef:
-                name: init-config
+                name: db-init-config
           volumeMounts:
             - name: db-data
               mountPath: /var/lib/postgresql/data
@@ -31,6 +31,6 @@ spec:
             claimName: db-pvc
         - name: db-init
           configMap:
-            name: db-init-config
+            name: db-sql-config
 
 
