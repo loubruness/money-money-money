@@ -17,6 +17,10 @@ services:
     build: 
       context: ./payment
     image: payment-service
+  portfolio-service:
+    build: 
+      context: ./portfolio
+    image: portfolio-service
   wallet-service:
     build: 
       context: ./wallet
