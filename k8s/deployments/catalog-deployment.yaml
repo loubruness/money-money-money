@@ -21,6 +21,8 @@ spec:
         envFrom:
         - configMapRef:
             name: db-connexion-config
+        - configMapRef:
+            name: services-urls-config
         env:
         - name: PORT
           value: "5000"
