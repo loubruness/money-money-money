@@ -1,41 +1,46 @@
 # money-money-money
 
 ***Fast test:***
-start minikube:
+- First you have to start minikube:
 
-```bash
-minikube start -p money-money-money
-```
-
-To be updates, the images must be build from the minicubs docker:
-
-* windows:
   ```bash
-  & minikube -p money-money-money docker-env --shell powershell | Invoke-Expression
+    minikube start -p money-money-money
   ```
 
-init sql:
+- To be updated, the images must be build from the minikube docker daemon, so you have to run the following commands:
 
-```
-kubectl create configmap db-sql-config --from-file=init.sql
-```
+  * windows:
+    ```bash
+      & minikube -p money-money-money docker-env --shell powershell | Invoke-Expression
+      docker compose build
+    ```
 
-si la db à déja été initialisée:
+- To init the database, the init.sql file must be in a configmap:
 
-```
-kubectl delete pvc db-pvc
-kubectl apply -f k8s/deployments
-```
+  ```bash
+    kubectl create configmap db-sql-config --from-file=init.sql
+  ```
 
-```
-kubectl exec -it db-7bbdf8bdff-9fqs2 -- bash
-```
+- Then you need to apply thes other configmaps to the cluster:
 
-```
-psql -U user -d money-money-money
-```
+  ```bash
+    kubectl apply -f k8s/configmap.yaml
+  ```
 
-```
- minikube -p money-money-money service account-service
+- Then you need to apply the doplyments to the cluster:
 
-```
+  ```bash
+    kubectl apply -f k8s/deployment.yaml
+  ```
+
+- Then you need to apply the services to the cluster:
+
+  ```bash
+    kubectl apply -f k8s/service.yaml
+  ```
+
+- To access the services, you can use the following command:
+
+  ```bash
+    minikube -p money-money-money service account-service catalog-service email-service payment-service portfolio-service wallet-service
+  ```
