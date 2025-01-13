@@ -21,3 +21,5 @@ spec:
         envFrom:
         - configMapRef:
             name: db-connexion-config
+        - configMapRef:
+            name: services-urls-config
