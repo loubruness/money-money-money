@@ -53,3 +53,11 @@ export const completePropertyFunding = async (id) => {
 export const getInvestmentsForProperty = async (id) => {
   return db("Investment").select("*").where({ Id_Property: id });
 };
+
+export const getPropertyInvestors = async (property_id) => {
+  return db("Investment")
+    .select("Id_User", "investment_amount", "email")
+    .where({ Id_Property: property_id })
+    .groupBy("Id_User")
+    .join("User", "Investment.Id_User", "User.Id_User");
+};
