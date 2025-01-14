@@ -13,6 +13,7 @@ import {
   getInvestmentsForProperty,
   cancelPropertyFunding,
   completePropertyFunding,
+  getPropertyInvestors,
 } from "../database/queries/propertyQueries.js";
 
 export const getAllProperties = async (request, response) => {
@@ -230,7 +231,7 @@ export const updateFundingMonthly = async (request, response) => {
 
               if (property.current_funding >= property.property_price) {
                 // Property has reached its funding goal
-                closePropertyForFunding(property.Id_Property);
+                successfulFunding(property[0]);
               } else {
                 // Property has not reached its funding goal
                 cancelPropertyFunding(property.Id_Property);
@@ -308,14 +309,58 @@ export const updateFundingForProperty = async (request, response) => {
         return;
       }
 
-      // Update the property's status to "funded"
-      completePropertyFunding(property_id)
-        .then(() => {
-          response.status(200).send();
-        })
-        .catch((error) => {
-          response.status(500).json({ error: error, message: error.message });
-        });
+      // The funding is successful
+      successfulFunding(property[0]);
     });
   });
+};
+
+const successfulFunding = async (property) => {
+  // Update the property's status to "funded"
+  completePropertyFunding(property.Id_Property)
+    .then(() => {
+      // Use node-schedule to send the certificate two weeks later
+      const initial_date = new Date();
+      const send_date = new Date();
+      send_date.setDate(send_date.getDate() + 14);
+
+      // Get investors and their shares and send them the certificate
+      getPropertyInvestors(property.Id_Property).then((investors) => {
+        schedule.scheduleJob(send_date, function () {
+          investors.forEach((investor) => {
+            // Code to test the mail content before sending it.
+            // console.log({
+            //   email: investor.email,
+            //   property: property.property_name,
+            //   shares: "certificate",
+            //   date: initial_date,
+            // });
+
+            fetch(`${process.env.EMAIL_SERVICE_URL}/emails/sendCertificate`, {
+              method: "POST",
+              body: JSON.stringify({
+                email: investor.email,
+                property: property.property_name,
+                shares: "certificate",
+                date: initial_date,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }).then((response) => {
+              if (response.status !== 200) {
+                console.log(
+                  "Error sending certificate to user " + property.Id_User
+                );
+              }
+            });
+          });
+        });
+      });
+
+      response.status(200).send();
+    })
+    .catch((error) => {
+      response.status(500).json({ error: error, message: error.message });
+    });
 };
