@@ -1,4 +1,4 @@
-import { checkUser, getWalletBalance, getWalletTransactions, getProperty, updateWalletBalance, insertTransaction } from '../database/queries/wallet.js';
+import { checkUser, getProperty, getWalletBalance, getWalletTransactions, insertTransaction, updateWalletBalance } from '../database/queries/wallet.js';
 
 // Deposit money into the wallet.
 export const depositAction = async (req, res) => {
@@ -95,6 +95,25 @@ export const receiveMonthlyIncomeAction = async (req, res) => {
     res.status(200).json({ success: true, wallet_balance: new_balance });
   } catch (error) {
     console.error("Error processing rental income:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Update the balance of the wallet.
+export const updateWalletBalanceAction = async (req, res) => {
+  try {
+    const Id_User = parseInt(req.params.Id_User, 10);
+    const { new_balance } = req.body;
+    const user = await checkUser(Id_User);
+    if (!user || user.length === 0) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+    if (new_balance < 0) {
+      return res.status(400).json({ success: false, error: 'Invalid balance' });
+    }
+    await updateWalletBalance(Id_User, new_balance);
+    res.status(200).json({ success: true, wallet_balance: new_balance });
+  } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };

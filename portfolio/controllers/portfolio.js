@@ -1,6 +1,6 @@
 // controllers/portfolio.js
-import { getUserPortfolio, getMonthlyRentalIncome, addInvestment } from '../database/queries/portfolio.js';
-import { getWalletBalance, updateWalletBalance } from '../database/queries/wallet.js';
+
+import { addInvestment, getMonthlyRentalIncome, getUserPortfolio } from '../database/queries/portfolio.js';
 
 // Get portfolio by end-user
 export const getPortfolioAction = async (req, res) => {
@@ -40,21 +40,48 @@ export const investAction = async (req, res) => {
     }
 
     // Check user's wallet balance
-    const wallet_balance = await getWalletBalance(Id_User);
-    if (amount > wallet_balance) {
-      return res.status(400).json({ success: false, error: 'Insufficient wallet balance to make the investment.' });
+    let wallet_balance = 0;
+    try{
+      const response = fetch(`http://wallet-service:5000/wallets/${Id_User}`);
+      const data = await response.json();
+      if (!response || response.length === 0) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+      }
+      else {
+        wallet_balance = data.wallet_balance;
+        if (amount > wallet_balance) {
+          return res.status(400).json({ success: false, error: 'Insufficient wallet balance to make the investment.' });
+        }
+    
+        // Deduct amount from wallet and add investment
+        const new_balance = wallet_balance - amount;
+        try {
+          const response = await fetch(`http://wallet-service:5000/wallets/${Id_User}/updateBalance`, {
+            method: 'PUT',
+            body: JSON.stringify({ new_balance: new_balance }),
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if(!response.ok){
+            throw new Error(`Error updating wallet balance: ${response.statusText}`);
+          }
+          
+          await addInvestment(Id_User, Id_Property, amount);
+      
+          res.status(200).json({
+            success: true,
+            message: 'Investment successfully made.',
+            new_wallet_balance: new_balance,
+          });
+        }
+        catch(error){
+          console.error("Error updating wallet balance:", error);
+          return res.status(500).json({ success: false, error: error.message });
+        }
+      }
+    }catch(error){
+      console.error("Error fetching wallet balance:", error);
+      return res.status(500).json({ success: false, error: error.message });
     }
-
-    // Deduct amount from wallet and add investment
-    const new_balance = wallet_balance - amount;
-    await updateWalletBalance(Id_User, new_balance);
-    await addInvestment(Id_User, Id_Property, amount);
-
-    res.status(200).json({
-      success: true,
-      message: 'Investment successfully made.',
-      new_wallet_balance: new_balance,
-    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

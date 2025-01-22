@@ -1,5 +1,6 @@
+import { checkAction, depositAction, receiveMonthlyIncomeAction, updateWalletBalanceAction, withdrawAction } from '../controllers/wallet.js';
+
 import { Router } from 'express';
-import { depositAction, withdrawAction, checkAction, receiveMonthlyIncomeAction } from '../controllers/wallet.js';
 
 const router = Router();
 
@@ -13,6 +14,10 @@ router.post('/:Id_User/deposit', (req, res) => {
 
 router.post('/:Id_User/withdraw', (req, res) => {
     withdrawAction(req, res);
+});
+
+router.post('/:Id_User/updateBalance', (req, res) => {
+    updateWalletBalanceAction(req, res);
 });
 
 router.get('/:Id_User', checkAction);
