@@ -1,12 +1,12 @@
 # money-money-money
 
 ***Fast test:***
+
 - First you have to start minikube:
 
   ```bash
     minikube start -p money-money-money
   ```
-
 - To be updated, the images must be build from the minikube docker daemon, so you have to run the following commands:
 
   * windows:
@@ -14,31 +14,26 @@
       & minikube -p money-money-money docker-env --shell powershell | Invoke-Expression
       docker compose build
     ```
-
 - To init the database, the init.sql file must be in a configmap:
 
   ```bash
     kubectl create configmap db-sql-config --from-file=init.sql
   ```
-
 - Then you need to apply thes other configmaps to the cluster:
 
   ```bash
-    kubectl apply -f k8s/configmap.yaml
+    kubectl apply -f k8s/configmaps
   ```
-
 - Then you need to apply the doplyments to the cluster:
 
   ```bash
-    kubectl apply -f k8s/deployment.yaml
+    kubectl apply -f k8s/deployments
   ```
-
 - Then you need to apply the services to the cluster:
 
   ```bash
-    kubectl apply -f k8s/service.yaml
+    kubectl apply -f k8s/services
   ```
-
 - To access the services, you can use the following command:
 
   ```bash
