@@ -1,0 +1,10 @@
+# ConfigMaps for  service/db
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-init-config
+data:
+  POSTGRES_USER : "postgres"
+  POSTGRES_PASSWORD : "postgres"
+  POSTGRES_DB : "postgres"
+

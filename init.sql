@@ -5,6 +5,7 @@ CREATE TABLE "User" (
    "birth_date" DATE NOT NULL,
    "email" VARCHAR(255) NOT NULL,
    "password" VARCHAR(255) NOT NULL,
+   "email" VARCHAR(100) NOT NULL,
    "role" VARCHAR(50) NOT NULL,
    "wallet_balance" DECIMAL(15,2) DEFAULT 0.00,
    PRIMARY KEY ("Id_User")
@@ -27,6 +28,7 @@ CREATE TABLE "Property" (
 CREATE TABLE "Investment" (
    "Id_Investment" SERIAL,
    "investment_amount" DECIMAL(15,2) NOT NULL,
+   "investment_share" DECIMAL(5,2) NOT NULL,
    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    "Id_Property" INT NOT NULL,
    "Id_User" INT NOT NULL,

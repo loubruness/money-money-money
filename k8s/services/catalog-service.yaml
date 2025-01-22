@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-service
+spec:
+  selector:
+    app: catalog-service  # Sélectionne les pods avec l'étiquette 'app: catalog-service'
+  ports:
+    - protocol: TCP
+      port: 5000    # Le port exposé sur le service
+      targetPort: 5000  # Le port du container à atteindre
+  type: NodePort  # Expose le service sur un port aléatoire de l'hôte
