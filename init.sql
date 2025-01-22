@@ -3,7 +3,6 @@ CREATE TABLE "User" (
    "user_name" VARCHAR(100) NOT NULL,
    "user_last_name" VARCHAR(100) NOT NULL,
    "birth_date" DATE NOT NULL,
-   "email" VARCHAR(255) NOT NULL,
    "password" VARCHAR(255) NOT NULL,
    "email" VARCHAR(100) NOT NULL,
    "role" VARCHAR(50) NOT NULL,
@@ -65,3 +64,6 @@ CREATE TABLE "Notifications" (
    PRIMARY KEY ("Id_Notifications"),
    CONSTRAINT fk_notifications_user FOREIGN KEY ("Id_User") REFERENCES "User" ("Id_User") ON DELETE CASCADE
 );
+
+INSERT INTO "User" ("user_name", "user_last_name", "birth_date", "email", "password", "role", "wallet_balance")
+VALUES ('admin', 'User', '1970-01-01', 'admin@example.com', 'adminpassword', 'admin', 0.00);

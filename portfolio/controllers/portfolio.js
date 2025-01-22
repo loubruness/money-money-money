@@ -42,7 +42,7 @@ export const investAction = async (req, res) => {
     // Check user's wallet balance
     let wallet_balance = 0;
     try{
-      const response = fetch(`http://wallet-service:5000/wallets/${Id_User}`);
+      const response = await fetch(`http://wallet-service:5000/wallets/${Id_User}`);
       const data = await response.json();
       if (!response || response.length === 0) {
         return res.status(404).json({ success: false, error: 'User not found' });
@@ -55,6 +55,7 @@ export const investAction = async (req, res) => {
     
         // Deduct amount from wallet and add investment
         const new_balance = wallet_balance - amount;
+        console.log("New wallet balance:", new_balance);
         try {
           const response = await fetch(`http://wallet-service:5000/wallets/${Id_User}/updateBalance`, {
             method: 'PUT',

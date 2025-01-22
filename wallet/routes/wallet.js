@@ -16,7 +16,7 @@ router.post('/:Id_User/withdraw', (req, res) => {
     withdrawAction(req, res);
 });
 
-router.post('/:Id_User/updateBalance', (req, res) => {
+router.put('/:Id_User/updateBalance', (req, res) => {
     updateWalletBalanceAction(req, res);
 });
 
