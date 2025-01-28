@@ -1,56 +1,107 @@
 version: '3.8'
 
+x-environment: &common-env
+  DB_HOST: "postgres-db"
+  DB_PORT: "5432"
+  DB_USER: "postgres"
+  DB_PASS: "postgres"
+  DB_NAME: "postgres"
+  PORT: 5000
+  ACCOUNT_SERVICE_URL: "http://account-service:5000"
+  CATALOG_SERVICE_URL: "http://catalog-service:5000"
+  EMAIL_SERVICE_URL: "http://email-service:5000"
+  PAYMENT_SERVICE_URL: "http://payment-service:5000"
+  PORTFOLIO_SERVICE_URL: "http://portfolio-service:5000"
+  WALLET_SERVICE_URL: "http://wallet-service:5000"
+
 services:
   account-service:
     build: 
       context: ./account
     image: account-service
+    ports:
+      - "5001:5000"
     environment:
-      PORT: 5000
+      <<: *common-env
+    networks:
+      - app-network
+
   catalog-service:
     build: 
       context: ./catalog
     image: catalog-service
+    ports:
+      - "5002:5000"
     environment:
-      PORT: 5000
+      <<: *common-env
+    networks:
+      - app-network
+
   email-service:
     build: 
       context: ./email
     image: email-service
+    ports:
+      - "5003:5000"
     environment:
-      PORT: 5000
+      <<: *common-env
+      MAIL_USERNAME: "masterbookefrei@gmail.com"
+      MAIL_PASSWORD: "rsds yrvc qwbn xspt"
+      OAUTH_CLIENTID: "80828151910-cv5c6nufjaeg8idr7hokcjh6g9e817s1.apps.googleusercontent.com"
+      OAUTH_CLIENT_SECRET: "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"
+      OAUTH_REFRESH_TOKEN: "1//042w2zbQs9GmSCgYIARAAGAQSNgF-L9IrO_7ibKwXKdjdToFNpoYTnERpgoVXbneSLngDDHDK_YNE5QlaGRwe_yR-UwRR9vj8kA"
+    networks:
+      - app-network
+
   payment-service:
     build: 
       context: ./payment
     image: payment-service
+    ports:
+      - "5004:5000"
     environment:
-      PORT: 5000
+      <<: *common-env
+    networks:
+      - app-network
+
   portfolio-service:
     build: 
       context: ./portfolio
     image: portfolio-service
+    ports:
+      - "5005:5000"
     environment:
-      PORT: 5000
+      <<: *common-env
+    networks:
+      - app-network
+
   wallet-service:
     build: 
       context: ./wallet
     image: wallet-service
+    ports:
+      - "5006:5000"
     environment:
-      PORT: 5000
+      <<: *common-env
+    networks:
+      - app-network
+
   api-service:
     build: 
       context: ./api
     image: api-service
+    ports:
+      - "5000:5000"
     environment:
-      PORT: 5000
+      <<: *common-env
+    networks:
+      - app-network
+
   db:
     image: postgres:17
     container_name: postgres-db
     restart: always
-
-    # Set shared memory limit when using docker-compose. This is a good practice according to the official PostgreSQL documentation.
     shm_size: 128mb
-
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -60,6 +111,12 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
 
 volumes:
   postgres-data:
+
+networks:
+  app-network:
+    driver: bridge
