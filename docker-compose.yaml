@@ -5,26 +5,44 @@ services:
     build: 
       context: ./account
     image: account-service
+    environment:
+      PORT: 5000
   catalog-service:
     build: 
       context: ./catalog
     image: catalog-service
+    environment:
+      PORT: 5000
   email-service:
     build: 
       context: ./email
     image: email-service
+    environment:
+      PORT: 5000
   payment-service:
     build: 
       context: ./payment
     image: payment-service
+    environment:
+      PORT: 5000
   portfolio-service:
     build: 
       context: ./portfolio
     image: portfolio-service
+    environment:
+      PORT: 5000
   wallet-service:
     build: 
       context: ./wallet
     image: wallet-service
+    environment:
+      PORT: 5000
+  api-service:
+    build: 
+      context: ./api
+    image: api-service
+    environment:
+      PORT: 5000
   db:
     image: postgres:17
     container_name: postgres-db

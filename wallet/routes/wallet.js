@@ -4,7 +4,7 @@ import { Router } from 'express';
 
 const router = Router();
 
-router.get('/', (res) => {
+router.get('/', (req,res) => {
   res.send({ response: 'Welcome to wallet route', ok: true }).status(200);
 });
 

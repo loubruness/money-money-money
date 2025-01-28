@@ -1,6 +1,10 @@
 // controllers/portfolio.js
-
 import { addInvestment, getMonthlyRentalIncome, getUserPortfolio } from '../database/queries/portfolio.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const wallet_service_url = process.env.WALLET_SERVICE_URL;
 
 // Get portfolio by end-user
 export const getPortfolioAction = async (req, res) => {
@@ -42,7 +46,7 @@ export const investAction = async (req, res) => {
     // Check user's wallet balance
     let wallet_balance = 0;
     try{
-      const response = await fetch(`http://wallet-service:5000/wallets/${Id_User}`);
+      const response = await fetch(`${wallet_service_url}/wallets/${Id_User}`);
       const data = await response.json();
       if (!response || response.length === 0) {
         return res.status(404).json({ success: false, error: 'User not found' });
@@ -57,7 +61,7 @@ export const investAction = async (req, res) => {
         const new_balance = wallet_balance - amount;
         console.log("New wallet balance:", new_balance);
         try {
-          const response = await fetch(`http://wallet-service:5000/wallets/${Id_User}/updateBalance`, {
+          const response = await fetch(`${wallet_service_url}/wallets/${Id_User}/updateBalance`, {
             method: 'PUT',
             body: JSON.stringify({ new_balance: new_balance }),
             headers: { 'Content-Type': 'application/json' },
