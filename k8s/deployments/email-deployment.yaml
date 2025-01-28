@@ -20,6 +20,8 @@ spec:
         - containerPort: 5000
         envFrom:
         - configMapRef:
+            name: email-config
+        - configMapRef:
             name: db-connexion-config
         - configMapRef:
             name: services-urls-config

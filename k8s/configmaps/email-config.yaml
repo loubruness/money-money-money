@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: email-config
+data:
+  MAIL_USERNAME: "masterbookefrei@gmail.com"
+  MAIL_PASSWORD: "rsds yrvc qwbn xspt"
+  OAUTH_CLIENTID: "80828151910-cv5c6nufjaeg8idr7hokcjh6g9e817s1.apps.googleusercontent.com"
+  OAUTH_CLIENT_SECRET: "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"
+  OAUTH_REFRESH_TOKEN: "1//042w2zbQs9GmSCgYIARAAGAQSNgF-L9IrO_7ibKwXKdjdToFNpoYTnERpgoVXbneSLngDDHDK_YNE5QlaGRwe_yR-UwRR9vj8kA"
+
+
+
