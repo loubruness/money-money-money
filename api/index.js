@@ -1,40 +1,51 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import axios from 'axios';
+import e from 'express';
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
 
-// Fonction générique pour envoyer la requête vers un service distant
-async function proxyRequest(req, res, serviceUrl, prefix) {
-  try {
-    const targetUrl = serviceUrl + req.url; // Construire l'URL cible
-    console.log(`Forwarding request to: ${targetUrl}`);
+app.use(express.json());
 
-    const options = {
-      method: req.method, // Transmettre la méthode HTTP
-      headers: { 
-        ...req.headers, 
-        host: undefined // Supprimer l'en-tête `host` pour éviter des conflits
-      },
-      body: ['POST', 'PUT', 'PATCH'].includes(req.method) ? req.body : undefined, // Ajouter le corps si nécessaire
+const sendRequest = async (req, res, serviceUrl, method) => {
+  try {
+    // Recréer l'URL complète du service cible
+    const url = `${serviceUrl}${req.url}`;
+    console.log(`Forwarding ${method} request to:`, url);
+
+    const config = {
+      method,
+      url,
+      data: method !== 'GET' ? req.body : undefined,
     };
 
-    const response = await fetch(targetUrl, options);
-
-    const contentType = response.headers.get('content-type') || '';
-    const isJson = contentType.includes('application/json');
-
-    const responseBody = isJson ? await response.json() : await response.text();
-
-    // Transmettre la réponse au client
-    res.status(response.status).send(responseBody);
+    const response = await axios(config);
+    res.status(response.status).json(response.data);
   } catch (error) {
-    console.error('Error in proxyRequest:', error.message);
-    res.status(500).send('An error occurred while connecting to the external service.');
+    if (error.response) {
+      console.error('Erreur du service distant:', error.response.data);
+      res.status(error.response.status).json(error.response.data);
+    } else {
+      console.error('Erreur lors du forward de la requête:', error.message);
+      res.status(500).json({ message: 'Erreur interne du serveur' });
+    }
   }
-}
+};
+
+const proxyRequest = async (req, res, serviceUrl) => {
+  const { method } = req;
+
+  if (['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+    await sendRequest(req, res, serviceUrl, method);
+  } else {
+    console.error(`Méthode ${method} non supportée`);
+    res.status(405).json({ message: 'Méthode non supportée' });
+  }
+};
+
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API service');
