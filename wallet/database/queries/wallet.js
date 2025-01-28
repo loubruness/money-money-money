@@ -76,12 +76,13 @@ export const insertTransaction = async (Id_User, transaction_type, transaction_a
 
 // Retrieve the rental income for a user from the Property table
 export const getProperty = async (Id_User, Id_Property) => {
-  try{
+  try {
     return await db('Property')
-    .select('rental_income_rate','property_price')
-    .where('Id_User', Id_User)
-    .andWhere('Id_Property', Id_Property)
-    .first();
+      .join('Investment', 'Property.Id_Property', '=', 'Investment.Id_Property')
+      .select('Property.rental_income_rate', 'Property.property_price')
+      .where('Property.Id_Property', Id_Property)
+      .andWhere('Investment.Id_User', Id_User)
+      .first();
   } catch (error) {
     console.error("Error getting property:", error);
     throw new Error("Failed to fetch property details");
