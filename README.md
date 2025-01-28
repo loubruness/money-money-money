@@ -34,7 +34,12 @@
   ```bash
     kubectl apply -f k8s/services
   ```
-- To access the services, you can use the following command:
+- To launch the API service you can use the following command:
+  
+  ```bash
+    minikube -p money-money-money service api-service
+  ```
+- To access the other services individually, you can use the following command:
 
   ```bash
     minikube -p money-money-money service account-service catalog-service email-service payment-service portfolio-service wallet-service
