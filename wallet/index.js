@@ -1,10 +1,12 @@
 import express from 'express';
 import wallet from './routes/wallet.js';
 import {db} from './database/db_connection.js';
+import dotenv from 'dotenv';
 
+dotenv.config();
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT;
 
 app.use(express.json());
 app.use('/wallets', wallet);
