@@ -1,4 +1,4 @@
-import { depositAction, receiveMonthlyIncomeAction, withdrawAction } from '../controllers/wallet.js';
+import { checkAction, depositAction, receiveMonthlyIncomeAction, withdrawAction } from '../controllers/wallet.js';
 
 import { Router } from 'express';
 
@@ -15,6 +15,8 @@ router.post('/:Id_User/deposit', (req, res) => {
 router.post('/:Id_User/withdraw', (req, res) => {
     withdrawAction(req, res);
 });
+
+router.get('/:Id_User', checkAction);
 
 router.get('/:Id_User/:Id_Property', (req, res) => {
     receiveMonthlyIncomeAction(req, res);

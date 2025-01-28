@@ -47,6 +47,21 @@ export const withdrawAction = async (req, res) => {
   }
 };
 
+// Check wallet balance and transactions.
+export const checkAction = async (req, res) => {
+  try {
+    const Id_User = parseInt(req.params.Id_User, 10);
+    const user = await checkUser(Id_User);
+    if (!user || user.length === 0) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+  }
+    const wallet_balance = await getWalletBalance(Id_User);
+    const wallet_transactions = await getWalletTransactions(Id_User);
+    res.status(200).json({ success: true, wallet_balance, wallet_transactions });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
 
 // Receive monthly rental income from the property.
 export const receiveMonthlyIncomeAction = async (req, res) => {
