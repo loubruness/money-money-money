@@ -36,6 +36,9 @@ async function proxyRequest(req, res, serviceUrl, prefix) {
   }
 }
 
+app.get('/', (req, res) => {
+  res.send('Welcome to the API service');
+});
 // Routes avec appel à la fonction générique
 app.all('/account*', (req, res) => {
   const serviceUrl = process.env.ACCOUNT_SERVICE_URL;
