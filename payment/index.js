@@ -11,7 +11,7 @@ const port = process.env.PORT;
 
 app.use(express.json());
 
-app.use('/payment', payment);
+app.use('/payments', payment);
 
 app.listen(port, () => {
   console.log(`Payment service listening at http://localhost:${port}`);
