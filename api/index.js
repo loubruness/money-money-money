@@ -71,7 +71,7 @@ app.all('/payments*', (req, res) => {
   proxyRequest(req, res, serviceUrl, '/payments');
 });
 
-app.all('portfolio*', (req, res) => {
+app.all('/portfolio*', (req, res) => {
   const serviceUrl = process.env.PORTFOLIO_SERVICE_URL;
   proxyRequest(req, res, serviceUrl, '/portfolio');
 });
