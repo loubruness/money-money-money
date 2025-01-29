@@ -1,46 +1,98 @@
-# money-money-money
+# Money-Money-Money
 
-***Fast test:***
+## Description
 
-- First you have to start minikube:
+**Money-Money-Money** is a microservices architecture for a financial management system. It consists of six microservices:
 
-  ```bash
-    minikube start -p money-money-money
-  ```
-- To be updated, the images must be build from the minikube docker daemon, so you have to run the following commands:
+- **Account Service**: Manages user accounts.
+- **Catalog Service**: Manages properties.
+- **Email Service**: Handles email sending.
+- **Payment Service**: Manages payments.
+- **Portfolio Service**: Manages user portfolios.
+- **Wallet Service**: Manages digital wallets.
 
-  * windows:
-    ```bash
-      & minikube -p money-money-money docker-env --shell powershell | Invoke-Expression
-      docker compose build
-    ```
-- To init the database, the init.sql file must be in a configmap:
+An **API Service** is also available, serving as a single entry point for the system.
 
-  ```bash
-    kubectl create configmap db-sql-config --from-file=init.sql
-  ```
-- Then you need to apply thes other configmaps to the cluster:
+The project can be run using **Kubernetes (Minikube)** or **Docker Compose**.
 
-  ```bash
-    kubectl apply -f k8s/configmaps
-  ```
-- Then you need to apply the doplyments to the cluster:
+---
 
-  ```bash
-    kubectl apply -f k8s/deployments
-  ```
-- Then you need to apply the services to the cluster:
+## Launch the Project
 
-  ```bash
-    kubectl apply -f k8s/services
-  ```
-- To launch the API service you can use the following command:
-  
-  ```bash
-    minikube -p money-money-money service api-service
-  ```
-- To access the other services individually, you can use the following command:
+### With Kubernetes (Minikube)
 
-  ```bash
-    minikube -p money-money-money service account-service catalog-service email-service payment-service portfolio-service wallet-service
-  ```
+1. **Start Minikube and create a cluster**:
+
+   ```bash
+   minikube start -p money-money-money
+   ```
+
+2. **Build Docker images within the Minikube cluster**:
+
+   - **Windows**:
+     ```bash
+     & minikube -p money-money-money docker-env --shell powershell | Invoke-Expression
+     docker compose build
+     ```
+   - **MacOS/Linux**:
+     ```bash
+     eval $(minikube -p money-money-money docker-env)
+     docker compose build
+     ```
+
+3. **Create a ConfigMap to initialize the database from `init.sql`**:
+
+   ```bash
+   kubectl create configmap db-sql-config --from-file=init.sql
+   ```
+
+4. **Create other ConfigMaps for the services**:
+
+   ```bash
+   kubectl apply -f k8s/configmaps
+   ```
+
+5. **Deploy the services to the cluster**:
+
+   ```bash
+   kubectl apply -f k8s/deployments
+   ```
+
+6. **Apply the Kubernetes services**:
+
+   ```bash
+   kubectl apply -f k8s/services
+   ```
+
+7. **Make the API accessible**:
+
+   ```bash
+   minikube -p money-money-money service api-service
+   ```
+8. **Test the API**:
+
+   - Access the API via **Postman** at the URL returned by the previous command.
+
+---
+
+### With Docker Compose
+
+1. **Run the project with Docker Compose**:
+
+   ```bash
+   docker compose up
+   ```
+
+2. **Test the API**:
+
+   - Access the API via **Postman** at `http://localhost:5000`.
+
+---
+
+### Notes
+
+- Ensure you have **Minikube**, **Kubectl**, and **Docker Compose** installed before running the project.
+- Kubernetes configuration files are located in `k8s/`.
+- Docker images must be built before launching the services.
+- For any configuration changes, update the ConfigMaps and redeploy the services.
+
