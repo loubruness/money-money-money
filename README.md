@@ -73,7 +73,7 @@ The project can be run using **Kubernetes (Minikube)** or **Docker Compose**.
    ```
 8. **Test the API**:
 
-   - Access the API via **Postman** at the URL returned by the previous command.
+   - Access the API via **Postman** at the URL returned by the previous command (replace `http://localhost:5000`).      
 
 ---
 
