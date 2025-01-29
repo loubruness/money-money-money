@@ -13,6 +13,8 @@
 
 An **API Service** is also available, serving as a single entry point for the system.
 
+A **Postman Collection** is provided for testing the API at the following url: [Postman Collection](https://interstellar-capsule-77572.postman.co/workspace/My-Workspace~5b5b8b60-3c0f-486f-8551-ea4ec3284a3d/collection/40076268-bf4a89a8-5797-4a3e-94d7-50545fefb675?action=share&creator=40076268)
+
 The project can be run using **Kubernetes (Minikube)** or **Docker Compose**.
 
 ---
