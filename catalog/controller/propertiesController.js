@@ -350,7 +350,10 @@ const successfulFunding = async (property) => {
             }).then((response) => {
               if (response.status !== 200) {
                 console.log(
-                  "Error sending certificate to user " + property.Id_User
+                  "Error sending certificate to user " +
+                    investor.user_name +
+                    " " +
+                    investor.user_last_name
                 );
               }
             });
